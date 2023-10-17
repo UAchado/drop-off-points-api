@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from models.point import Point
+from api.models.dropoffPoint import DropoffPoint
 import uvicorn
 
 app = FastAPI()
 
-@app.get("/points/", response_model=list[Point])
-def get_all_points() -> list[Point]:
+@app.get("/points/", response_model=list[DropoffPoint])
+def get_all_points() -> list[DropoffPoint]:
     return [
         {"name": "Reitoria", "location": "Departamento 25", "coordinates": "40.631417730224, -8.657526476133642", "image": "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fuaonline.ua.pt%2Fupload%2Fimg%2Fjoua_i_3090.jpg&width=1200"},
         {"name": "CP", "location": "Departamento 23", "coordinates": "40.62957166653202, -8.655231694880136", "image": "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F001%2F838%2Foriginal.jpg&width=1200"},

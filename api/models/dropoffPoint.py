@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class Point(BaseModel):
+class DropoffPoint(BaseModel):
     name: str
     location: str
     coordinates: str
