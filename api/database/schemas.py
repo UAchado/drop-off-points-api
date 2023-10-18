@@ -11,8 +11,6 @@ class PointCreate(PointBase):
 
 class Point(PointBase):
     id: int
-    personnel: list[int] = []
-    items: list[int] = []
 
     class Config:
         orm_mode = True

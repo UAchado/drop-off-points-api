@@ -12,5 +12,3 @@ class Point(Base):
     location = Column(String, unique=True)
     coordinates = Column(String, unique=True)
     photo = Column(String, unique=True)
-    personnel = Column(list[Integer])
-    items = Column(list[Integer])
