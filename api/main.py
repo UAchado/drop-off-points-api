@@ -1,10 +1,11 @@
+import time
 from fastapi import FastAPI, Depends, HTTPException
 import sqlalchemy
 import uvicorn
 
 from sqlalchemy.orm import Session
 
-from .db_info import crud, models, schemas, database 
+from db_info import crud, models, schemas, database 
 
 models.Base.metadata.create_all(bind=database.engine)
 
