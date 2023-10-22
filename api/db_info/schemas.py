@@ -12,5 +12,5 @@ class PointCreate(PointBase):
 class Point(PointBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes  = True

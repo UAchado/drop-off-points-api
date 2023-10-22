@@ -5,9 +5,7 @@ import uvicorn
 
 from sqlalchemy.orm import Session
 
-from db_info import crud, models, schemas, database 
-
-models.Base.metadata.create_all(bind=database.engine)
+from api.db_info import crud, database, schemas
 
 app = FastAPI()
 
