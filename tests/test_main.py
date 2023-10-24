@@ -10,12 +10,6 @@ class TestFastAPI(unittest.TestCase):
         assert response.status_code == 200
         assert response.json() == {"response": "Hello World!"}
 
-    def test_base2(self):
-        client = TestClient(app)
-        response = client.get("/")
-        assert response.status_code == 201
-        assert response.json() == {"response": "Hello World!"}
-
     # @patch('main.database.SessionLocal')
     # def test_get_all_points(self, mock_db):
     #     mock_session = Mock()
