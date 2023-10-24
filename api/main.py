@@ -1,19 +1,42 @@
-from fastapi import FastAPI
-from api.models.dropoffPoint import DropoffPoint
+import time
+from fastapi import FastAPI, Depends, HTTPException
+import sqlalchemy
 import uvicorn
+
+from sqlalchemy.orm import Session
+
+from api.db_info import crud, database, schemas
 
 app = FastAPI()
 
-@app.get("/points/", response_model=list[DropoffPoint])
-def get_all_points() -> list[DropoffPoint]:
-    return [
-        {"name": "Reitoria", "location": "Departamento 25", "coordinates": "40.631417730224, -8.657526476133642", "image": "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fuaonline.ua.pt%2Fupload%2Fimg%2Fjoua_i_3090.jpg&width=1200"},
-        {"name": "CP", "location": "Departamento 23", "coordinates": "40.62957166653202, -8.655231694880136", "image": "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F001%2F838%2Foriginal.jpg&width=1200"},
-        {"name": "DETI", "location": "Departamento 4", "coordinates": "40.63331148617483, -8.659589862642955", "image": "https://api-assets.ua.pt/files/imgs/000/000/380/original.jpg"},
-        {"name": "Cantina de Santiago", "location": "Departamento 6", "coordinates": "40.630659968175124, -8.659097986459223", "image": "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fuaonline.ua.pt%2Fupload%2Fimg%2Fjoua_i_12306.jpg&width=1200"},
-        {"name": "Cantina do Crasto", "location": "Departamento M", "coordinates": "40.62450887522072, -8.656864475040406", "image": "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fuaonline.ua.pt%2Fupload%2Fimg%2Fjoua_i_2828.JPG&width=1200"},
-        {"name": "Pavilhão Aristides Hall", "location": "Departamento E", "coordinates": "40.63000326980208, -8.654180591479575", "image": "https://d1bvpoagx8hqbg.cloudfront.net/originals/bem-vindos-a-ua-399bd8560914b519d0dca3fc57bd0afe.jpg"},
-    ]
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/")
+def base():
+    return {"response": "Hello World!"}
+@app.get("/points/", response_model=list[schemas.Point])
+def get_all_points(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    points = crud.get_points(db, skip=skip, limit=limit)
+    return points
+
+@app.post("/points/", response_model=schemas.Point)
+def create_point(point: schemas.PointCreate, db: Session = Depends(get_db)):
+    db_point = crud.get_point_by_name(db, name=point.name)
+    if db_point:
+        raise HTTPException(status_code=400, detail="Point already registered")
+    return crud.create_point(db=db, new_point=point)
+
+@app.delete("/point/{point_name}")
+def delete_point(point_name: str, db: Session = Depends(get_db)):
+    point = crud.get_point_by_name(db, name=point_name)
+    if crud.delete_point(db, point) == "OK":
+        return {"message": "Point deleted"}
+    return {"message": "Error"}
 
 if __name__  == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)
