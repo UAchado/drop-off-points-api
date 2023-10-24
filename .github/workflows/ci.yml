@@ -1,15 +1,29 @@
-name: Docker Image CI
+name: CI Pipeline
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch
 
 jobs:
 
-  build:
+  test-and-build:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Run tests with pytest
+      run: pytest
+
     - name: Login on DockerHub
       env:
         DOCKER_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
@@ -17,6 +31,6 @@ jobs:
       run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       
     - name: Build the Docker image
-      run: docker build -t drop-off-points-api .
+      run: docker build -t uachado/drop-off-points-api .
     - name: Push image to DockerHub
       run: docker push uachado/drop-off-points-api:latest
