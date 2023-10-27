@@ -1,57 +1,44 @@
-import unittest
-from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
-from api.main import app, get_db
+from unittest.mock import patch
+from api import main
 
-class TestFastAPI(unittest.TestCase):
-    def test_base(self):
-        client = TestClient(app)
-        response = client.get("/")
-        assert response.status_code == 200
-        assert response.json() == {"response": "Hello World!"}
+client = TestClient(main.app)
 
-    # @patch('main.database.SessionLocal')
-    # def test_get_all_points(self, mock_db):
-    #     mock_session = Mock()
-    #     mock_db.return_value = mock_session
-    #     mock_session.query.return_value.filter.return_value.offset.return_value.limit.return_value.all.return_value = []
+def test_base():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"response": "Hello World!"}
 
-    #     client = TestClient(app)
-    #     response = client.get("/points/")
-    #     assert response.status_code == 200
-    #     assert response.json() == []
+@patch("api.main.crud.get_points")
+def test_get_all_points(mock_get_points):
+    mock_points = [
+        {"id": 1, "name": "point1", "location": "location1", "coordinates": "coordinates1", "photo": "photo1"},
+        {"id": 2, "name": "point2", "location": "location2", "coordinates": "coordinates2", "photo": "photo2"}
+    ]
+    mock_get_points.return_value = mock_points
+    
+    response = client.get("/points/")
+    assert response.status_code == 200
+    assert response.json() == mock_points
 
-    # @patch('main.database.SessionLocal')
-    # def test_create_point(self, mock_db):
-    #     mock_session = Mock()
-    #     mock_db.return_value = mock_session
-    #     mock_session.query.return_value.filter.return_value.first.return_value = None
-    #     mock_session.add.return_value = None
-    #     mock_session.commit.return_value = None
-    #     mock_session.refresh.return_value = None
+@patch("api.main.crud.get_point_by_name")
+@patch("api.main.crud.create_point")
+def test_create_point(mock_create_point, mock_get_point_by_name):
+    mock_get_point_by_name.return_value = None
+    mock_point = {"id": 1, "name": "point1", "location": "location1", "coordinates": "coordinates1", "photo": "photo1"}
+    mock_create_point.return_value = mock_point
+    
+    response = client.post("/points/", json={"name": "point1", "location": "location1", "coordinates": "coordinates1", "photo": "photo1"})
+    assert response.status_code == 201
+    assert response.json() == mock_point
 
-    #     client = TestClient(app)
-    #     response = client.post("/points/", json={"name": "point1"})
-    #     assert response.status_code == 200
-    #     assert response.json() == {"id": 1, "name": "point1"}
-
-    # @patch('main.database.SessionLocal')
-    # def test_delete_point(self, mock_db):
-    #     mock_session = Mock()
-    #     mock_db.return_value = mock_session
-    #     mock_session.query.return_value.filter.return_value.first.return_value = {"id": 1, "name": "point1"}
-    #     mock_session.delete.return_value = None
-    #     mock_session.commit.return_value = None
-
-    #     client = TestClient(app)
-    #     response = client.delete("/point/point1")
-    #     assert response.status_code == 200
-    #     assert response.json() == {"message": "Point deleted"}
-
-    #     mock_session.delete.return_value = "Error"
-    #     response = client.delete("/point/point1")
-    #     assert response.status_code == 200
-    #     assert response.json() == {"message": "Error"}
-
-if __name__ == '__main__':
-    unittest.main()
+@patch("api.main.crud.get_point_by_name")
+@patch("api.main.crud.delete_point")
+def test_delete_point(mock_delete_point, mock_get_point_by_name):
+    mock_point = {"id": 1, "name": "point1", "location": "location1", "coordinates": "coordinates1", "photo": "photo1"}
+    mock_get_point_by_name.return_value = mock_point
+    mock_delete_point.return_value = "OK"
+    
+    response = client.delete("/point/point1")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Point deleted"}
