@@ -4,6 +4,4 @@ pydantic==2.4.2
 pydantic_core==2.10.1
 sqlalchemy==2.0.22
 mysql-connector-python==8.1.0
-protobuf==4.21.12
 pytest==7.4.2
-httpx==0.25.0

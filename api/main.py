@@ -38,7 +38,7 @@ def delete_point(point_name: str, db: Session = Depends(get_db)):
     point = crud.get_point_by_name(db, name = point_name)
     if crud.delete_point(db, point) == "OK":
         return {"message": "Point deleted"}
-    return {"m  essage": "Error"}
+    return {"message": "Error"}
 
 if __name__  == '__main__':
     uvicorn.run(app, host = '0.0.0.0', port = 8000)
