@@ -33,7 +33,7 @@ def create_point(point: schemas.PointCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code = 400, detail = "Point already registered")
     return crud.create_point(db = db, new_point = point)
 
-@app.delete("/point/{point_name}", status_code = status.HTTP_200_OK)
+@app.delete("/points/{point_name}", status_code = status.HTTP_200_OK)
 def delete_point(point_name: str, db: Session = Depends(get_db)):
     point = crud.get_point_by_name(db, name = point_name)
     if crud.delete_point(db, point) == "OK":

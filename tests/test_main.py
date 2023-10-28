@@ -39,6 +39,6 @@ def test_delete_point(mock_delete_point, mock_get_point_by_name):
     mock_get_point_by_name.return_value = mock_point
     mock_delete_point.return_value = "OK"
     
-    response = client.delete("/point/point1")
+    response = client.delete("/points/point1")
     assert response.status_code == 200
     assert response.json() == {"message": "Point deleted"}
