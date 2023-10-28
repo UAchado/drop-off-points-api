@@ -13,4 +13,4 @@ class Point(PointBase):
     id: int
 
     class ConfigDict:
-        from_attributes  = True
+        from_attributes = True

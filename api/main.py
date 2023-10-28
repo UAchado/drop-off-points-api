@@ -4,11 +4,15 @@ from fastapi import FastAPI, Depends, HTTPException, status
 
 import os
 if os.environ.get("IN_DOCKER_CONTAINER"):
-    from db_info import crud, database, schemas
+    from db_info import crud, database, schemas, models
+
+    models.Base.metadata.create_all(bind = database.engine)
+
 else:
     from .db_info import crud, database, schemas
 
 app = FastAPI()
+
 
 def get_db():
     db = database.SessionLocal()
@@ -33,12 +37,12 @@ def create_point(point: schemas.PointCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code = 400, detail = "Point already registered")
     return crud.create_point(db = db, new_point = point)
 
-@app.delete("/points/{point_name}", status_code = status.HTTP_200_OK)
+@app.delete("/points/name/{point_name}", status_code = status.HTTP_200_OK)
 def delete_point(point_name: str, db: Session = Depends(get_db)):
     point = crud.get_point_by_name(db, name = point_name)
     if crud.delete_point(db, point) == "OK":
         return {"message": "Point deleted"}
-    return {"message": "Error"}
+    return {"message": "Point doesn't exist!"}
 
 if __name__  == '__main__':
     uvicorn.run(app, host = '0.0.0.0', port = 8000)
