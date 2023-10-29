@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 
-def get_points(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Point).offset(skip).limit(limit).all()
+def get_points(db: Session):
+    return db.query(models.Point).all()
 
 def get_point_id(db: Session, id: int):
     return db.query(models.Point).filter(models.Point.id == id).first()
