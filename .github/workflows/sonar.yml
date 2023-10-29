@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
+      - name: Install Tox
+        run: pip install tox
       - name: Run tox
         run: tox -e py
       - name: SonarCloud Scan
