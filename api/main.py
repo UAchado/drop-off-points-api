@@ -11,7 +11,7 @@ if os.environ.get("IN_DOCKER_CONTAINER"):
 else:
     from .db_info import crud, database, schemas
 
-app = FastAPI()
+app = FastAPI(title = "Drop-off Points API", description = "This API manages the drop-off points in UAchado System", version = "1.0.0")
 
 
 def get_db():
@@ -21,28 +21,33 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
+@app.get("/v1/")
 def base():
     return {"response": "Hello World!"}
 
-@app.get("/points/", response_model = list[schemas.Point], status_code = status.HTTP_200_OK)
-def get_all_points(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    points = crud.get_points(db, skip = skip, limit = limit)
+@app.get("/v1/points/", response_description = "Get the list of existing points.", response_model = list[schemas.Point], tags = ["Points"], status_code = status.HTTP_200_OK)
+def get_all_points(db: Session = Depends(get_db)):
+    points = crud.get_points(db)
     return points
 
-@app.post("/points/", response_model = schemas.Point, status_code = status.HTTP_201_CREATED)
+@app.get("/v1/points/name/{point_name}", response_description = "Get a specific point by its name.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_200_OK)
+def get_point(point_name: str, db: Session = Depends(get_db)):
+    point = crud.get_point_by_name(db = db, name = point_name)
+    if not point:
+        raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
+    return point
+
+@app.post("/v1/points/", response_description = "Create/Insert a new point.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_201_CREATED)
 def create_point(point: schemas.PointCreate, db: Session = Depends(get_db)):
-    db_point = crud.get_point_by_name(db, name = point.name)
-    if db_point:
-        raise HTTPException(status_code = 400, detail = "Point already registered")
+    if crud.get_point_by_name(db, name = point.name):
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "POINT ALREADY REGISTERED")
     return crud.create_point(db = db, new_point = point)
 
-@app.delete("/points/name/{point_name}", status_code = status.HTTP_200_OK)
+@app.delete("/v1/points/name/{point_name}", response_description = "Delete a specific point by its name.", tags = ["Points"], status_code = status.HTTP_200_OK)
 def delete_point(point_name: str, db: Session = Depends(get_db)):
-    point = crud.get_point_by_name(db, name = point_name)
-    if crud.delete_point(db, point) == "OK":
-        return {"message": "Point deleted"}
-    return {"message": "Point doesn't exist!"}
+    if crud.delete_point(db, point_name) == None:
+        raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
+    return {"message": "POINT DELETED"}
 
 if __name__  == '__main__':
     uvicorn.run(app, host = '0.0.0.0', port = 8000)

@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 
-def get_points(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Point).offset(skip).limit(limit).all()
+def get_points(db: Session):
+    return db.query(models.Point).all()
 
 def get_point_id(db: Session, id: int):
     return db.query(models.Point).filter(models.Point.id == id).first()
@@ -21,10 +21,10 @@ def create_point(db: Session, new_point: schemas.PointCreate):
     db.refresh(db_point)
     return db_point
 
-def delete_point(db: Session, point: schemas.Point):
-    db_point = db.query(models.Point).filter(models.Point.id == point.id).first()
+def delete_point(db: Session, name: str):
+    db_point = get_point_by_name(db, name)
+    if db_point == None:
+        return None
     db.delete(db_point)
     db.commit()
-    if get_point_by_name(db, point.name):
-        return "ERROR"
     return "OK"
