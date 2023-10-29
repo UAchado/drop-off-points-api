@@ -21,10 +21,10 @@ def create_point(db: Session, new_point: schemas.PointCreate):
     db.refresh(db_point)
     return db_point
 
-def delete_point(db: Session, point: schemas.Point):
-    db_point = db.query(models.Point).filter(models.Point.id == point.id).first()
+def delete_point(db: Session, name: str):
+    db_point = get_point_by_name(db, name)
+    if db_point == None:
+        return None
     db.delete(db_point)
     db.commit()
-    if get_point_by_name(db, point.name):
-        return "ERROR"
     return "OK"
