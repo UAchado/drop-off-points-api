@@ -1,7 +1,13 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://uachado:123!@db:3306/points_db"
+
+SQLALCHEMY_DATABASE_URL = f"mysql+mysqlconnector://{os.environ['DATABASE_USER']}:" + \
+    f"{os.environ['DATABASE_PASSWORD']}@" + \
+    f"{os.environ['DATABASE_HOST']}/" + \
+    f"{os.environ['DATABASE_NAME']}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

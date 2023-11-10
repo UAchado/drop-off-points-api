@@ -3,15 +3,18 @@ version: '3.1'
 services:
   db:
     image: mysql:latest
+    env_file:
+    - .env
     environment:
-      MYSQL_ROOT_PASSWORD: 123123
-      MYSQL_DATABASE: points_db
-      MYSQL_USER: uachado
-      MYSQL_PASSWORD: 123!
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
-      - 3306:3306
+      - 3307:3306
     volumes:
       - db_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pestia"]
       timeout: 5s 
@@ -20,11 +23,18 @@ services:
 
   api:
     build: .
+    env_file:
+    - .env
     command: uvicorn main:app --host 0.0.0.0 --reload
     volumes:
       - .:/app
     ports:
       - 8000:8000
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
