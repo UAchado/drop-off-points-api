@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://uachado:123!@db:3306/points_db"
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://:@:3306/"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
