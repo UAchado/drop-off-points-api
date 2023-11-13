@@ -2,12 +2,6 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch
 from api import main
 
-import os
-from dotenv import load_dotenv, dotenv_values
-
-ENV_FILE_PATH = os.getenv("ENV_FILE_PATH")
-load_dotenv(ENV_FILE_PATH)
-
 client = TestClient(main.app)
 
 def test_base():
