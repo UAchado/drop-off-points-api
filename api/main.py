@@ -1,6 +1,8 @@
 import uvicorn
 import os
 
+
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends, HTTPException, status
 from dotenv import load_dotenv, dotenv_values
@@ -13,6 +15,13 @@ database.Base.metadata.create_all(bind = database.engine)
 
 app = FastAPI(title = "Drop-off Points API", description = "This API manages the drop-off points in UAchado System", version = "1.0.0")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allows all origins to make requests
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 def get_db():
     db = database.SessionLocal()
