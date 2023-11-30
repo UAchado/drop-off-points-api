@@ -43,13 +43,13 @@ jobs:
         DATABASE_URL: mysql+mysqlconnector://user:password@localhost:3306/testdb
       run: pytest
 
-    - name: Login on DockerHub
+    - name: Authenticate with AWS
       env:
-        DOCKER_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
-        DOCKER_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        AWS_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+        AWS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      run: aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin ${{var.AWS_ECR_REPO}}
       
     - name: Build the Docker image
-      run: docker build -t uachado/drop-off-points-api -f Dockerfile.prod .
+      run: docker build -t ${{var.AWS_ECR_REPO}}/drop-off-points-api -f Dockerfile.prod .
     - name: Push image to DockerHub
-      run: docker push uachado/drop-off-points-api:latest
+      run: docker push ${{var.AWS_ECR_REPO}}/drop-off-points-api:latest
