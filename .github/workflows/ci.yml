@@ -62,6 +62,6 @@ jobs:
         ECR_REPOSITORY: "uachado"
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
