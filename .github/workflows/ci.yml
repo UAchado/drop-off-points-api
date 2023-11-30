@@ -41,6 +41,11 @@ jobs:
         DATABASE_URL: mysql+mysqlconnector://user:password@localhost:3306/testdb
       run: pytest
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v
+      with:
+        aws-region: us-west-1
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
