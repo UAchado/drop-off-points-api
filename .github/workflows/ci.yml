@@ -47,9 +47,9 @@ jobs:
       env:
         AWS_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
         AWS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-      run: aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin ${{var.AWS_ECR_REPO}}
+      run: aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin ${{vars.AWS_ECR_REPO}}
       
     - name: Build the Docker image
-      run: docker build -t ${{var.AWS_ECR_REPO}}/drop-off-points-api -f Dockerfile.prod .
+      run: docker build -t ${{vars.AWS_ECR_REPO}}/drop-off-points-api -f Dockerfile.prod .
     - name: Push image to DockerHub
-      run: docker push ${{var.AWS_ECR_REPO}}/drop-off-points-api:latest
+      run: docker push ${{vars.AWS_ECR_REPO}}/drop-off-points-api:latest
