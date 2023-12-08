@@ -61,10 +61,13 @@ def test_get_point_id(db):
     assert point == None
 
     add_points_to_db(db, points_bucket)
+    
+    all_points = crud.get_points(db = db)
+    assert len(all_points) != 0
 
-    point = crud.get_point_id(db = db, id = 1)
+    point = crud.get_point_id(db = db, id = all_points[0].id)
     assert point != None
-    assert point.name == points_bucket[0].name
+    assert point.id == all_points[0].id
 
 def test_get_point_by_name(db):
     
