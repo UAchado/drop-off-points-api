@@ -14,6 +14,7 @@ from db_info import crud, database, schemas, models
 database.Base.metadata.create_all(bind = database.engine)
 
 app = FastAPI(title = "Drop-off Points API", description = "This API manages the drop-off points in UAchado System", version = "1.0.0")
+app.include_router(prefix = "/points")
 
 app.add_middleware(
     CORSMiddleware,
