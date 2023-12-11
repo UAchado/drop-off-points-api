@@ -10,7 +10,7 @@ from dotenv import load_dotenv, dotenv_values
 ENV_FILE_PATH = os.getenv("ENV_FILE_PATH")
 load_dotenv(ENV_FILE_PATH)
 
-from db_info import crud, database, schemas, models
+from db_info import crud, database, schemas
 database.Base.metadata.create_all(bind = database.engine)
 
 app = FastAPI(title = "Drop-off Points API", description = "This API manages the drop-off points in UAchado System", version = "1.0.0")

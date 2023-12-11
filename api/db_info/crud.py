@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 def get_points(db: Session):
-    return db.query(models.Point).all()
+    return db.query(models.AuthorizationToPoint).all()
 
 def get_point_id(db: Session, id: int):
     return db.query(models.Point).filter(models.Point.id == id).first()
@@ -15,7 +15,7 @@ def create_point(db: Session, new_point: schemas.PointCreate):
     db_point = models.Point(name = new_point.name, 
                             location = new_point.location, 
                             coordinates = new_point.coordinates, 
-                            photo = new_point.photo)
+                            image = new_point.image)
     db.add(db_point)
     db.commit()
     db.refresh(db_point)
