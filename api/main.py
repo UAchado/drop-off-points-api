@@ -30,29 +30,29 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/v1/")
+@app.get("/points/v1/")
 def base():
     return {"response": "Hello World!"}
 
-@app.get("/v1/points/", response_description = "Get the list of existing points.", response_model = list[schemas.Point], tags = ["Points"], status_code = status.HTTP_200_OK)
+@app.get("/points/v1/points/", response_description = "Get the list of existing points.", response_model = list[schemas.Point], tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_all_points(db: Session = Depends(get_db)):
     points = crud.get_points(db)
     return points
 
-@app.get("/v1/points/name/{point_name}", response_description = "Get a specific point by its name.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_200_OK)
+@app.get("/points/v1/points/name/{point_name}", response_description = "Get a specific point by its name.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_point(point_name: str, db: Session = Depends(get_db)):
     point = crud.get_point_by_name(db = db, name = point_name)
     if not point:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
     return point
 
-@app.post("/v1/points/", response_description = "Create/Insert a new point.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_201_CREATED)
+@app.post("/points/v1/points/", response_description = "Create/Insert a new point.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_201_CREATED)
 def create_point(point: schemas.PointCreate, db: Session = Depends(get_db)):
     if crud.get_point_by_name(db, name = point.name):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "POINT ALREADY REGISTERED")
     return crud.create_point(db = db, new_point = point)
 
-@app.delete("/v1/points/name/{point_name}", response_description = "Delete a specific point by its name.", tags = ["Points"], status_code = status.HTTP_200_OK)
+@app.delete("/points/v1/points/name/{point_name}", response_description = "Delete a specific point by its name.", tags = ["Points"], status_code = status.HTTP_200_OK)
 def delete_point(point_name: str, db: Session = Depends(get_db)):
     if crud.delete_point(db, point_name) == None:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
