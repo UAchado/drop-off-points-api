@@ -25,12 +25,10 @@ class Point(PointBase):
             }
         }
 
-class AuthorizationToPointBase(BaseModel):
-    email: str
-    dropoff_point_id: int
-
-class AuthorizationToPoint(PointBase):
+class AuthorizationToPoint(BaseModel):
     id: int
+    email: str
+    point_id: int
 
     class ConfigDict:
         from_attributes = True
@@ -38,6 +36,6 @@ class AuthorizationToPoint(PointBase):
             "example": {
                 "id" : 1,
                 "email": "fake@fakemail.fake",
-                "dropoff_point_id": 1,
+                "point_id": 1,
             }
         }

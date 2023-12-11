@@ -1,3 +1,4 @@
+from typing import Optional
 import uvicorn
 import os
 
@@ -34,25 +35,38 @@ def get_db():
 def base():
     return {"response": "Hello World!"}
 
-@app.get("/points/v1/points/", response_description = "Get the list of existing points.", response_model = list[schemas.Point], tags = ["Points"], status_code = status.HTTP_200_OK)
+@app.get("/points/v1/points/", response_description = "Get the list of existing points.",
+         response_model = list[schemas.Point], tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_all_points(db: Session = Depends(get_db)):
     points = crud.get_points(db)
     return points
 
-@app.get("/points/v1/points/name/{point_name}", response_description = "Get a specific point by its name.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_200_OK)
+@app.get("/points/v1/points/name/{point_name}", response_description = "Get a specific point by its name.",
+         response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_point(point_name: str, db: Session = Depends(get_db)):
     point = crud.get_point_by_name(db = db, name = point_name)
     if not point:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
     return point
 
-@app.post("/points/v1/points/", response_description = "Create/Insert a new point.", response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_201_CREATED)
+@app.post("/points/v1/points/", response_description = "Create/Insert a new point.",
+          response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_201_CREATED)
 def create_point(point: schemas.PointCreate, db: Session = Depends(get_db)):
     if crud.get_point_by_name(db, name = point.name):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "POINT ALREADY REGISTERED")
     return crud.create_point(db = db, new_point = point)
 
-@app.delete("/points/v1/points/name/{point_name}", response_description = "Delete a specific point by its name.", tags = ["Points"], status_code = status.HTTP_200_OK)
+
+@app.get("/points/v1/access/{email}", response_description = "Get a specific point by its name.",
+         response_model = Optional[int], tags = ["Points"], status_code = status.HTTP_200_OK)
+def get_point_id_of_access(email: str, db: Session = Depends(get_db)):
+    access_point_id = crud.get_auth_by_email(db = db, email = email)
+    if not access_point_id:
+        raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "ACCESS NOT FOUND")
+    return access_point_id
+
+@app.delete("/points/v1/points/name/{point_name}", response_description = "Delete a specific point by its name.",
+            tags = ["Points"], status_code = status.HTTP_200_OK)
 def delete_point(point_name: str, db: Session = Depends(get_db)):
     if crud.delete_point(db, point_name) == None:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")

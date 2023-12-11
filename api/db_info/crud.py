@@ -3,13 +3,19 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 def get_points(db: Session):
-    return db.query(models.AuthorizationToPoint).all()
+    return db.query(models.Point).all()
 
 def get_point_id(db: Session, id: int):
     return db.query(models.Point).filter(models.Point.id == id).first()
 
 def get_point_by_name(db: Session, name: str):
     return db.query(models.Point).filter(models.Point.name == name).first()
+
+def get_auth_by_email(db: Session, email: str):
+    access = db.query(models.AuthorizationToPoint).filter(models.AuthorizationToPoint.email == email).first()
+    if access != None:
+        return access.point_id
+    return None
 
 def create_point(db: Session, new_point: schemas.PointCreate):
     db_point = models.Point(name = new_point.name, 

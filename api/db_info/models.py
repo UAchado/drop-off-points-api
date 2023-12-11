@@ -13,8 +13,8 @@ class Point(database.Base):
     image = Column(String(500))
     
 class AuthorizationToPoint(database.Base):
-    __tablename__ = "auth_point"
+    __tablename__ = "authpoint"
     
     id = Column(Integer, primary_key = True, index = True, autoincrement=True)
-    name = Column(String(30), unique = True)
-    dropoff_point_id = Column(Integer)
+    email = Column(String(30), unique = True)
+    point_id = Column(Integer)

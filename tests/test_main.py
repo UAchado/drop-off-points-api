@@ -42,14 +42,30 @@ def test_create_point(mock_create_point, mock_get_point_by_name):
     mock_point = {"id": 1, "name": "point1", "location": "location1", "coordinates": "coordinates1", "image": "image1"}
     mock_create_point.return_value = mock_point
     
-    response = client.post("/points/v1/points/", json = {"name": "point1", "location": "location1", "coordinates": "coordinates1", "photo": "photo1"})
+    response = client.post("/points/v1/points/", json = {"name": "point1", "location": "location1", "coordinates": "coordinates1", "image": "image1"})
     assert response.status_code == 201
     assert response.json() == mock_point
 
     mock_get_point_by_name.return_value = mock_point
-    response = client.post("/points/v1/points/", json = {"name": "point1", "location": "location1", "coordinates": "coordinates1", "photo": "photo1"})
+    response = client.post("/points/v1/points/", json = {"name": "point1", "location": "location1", "coordinates": "coordinates1", "image": "image1"})
     assert response.status_code == 409
     assert response.json() == {"detail": "POINT ALREADY REGISTERED"}
+
+@patch("api.main.crud.get_auth_by_email")
+def test_get_point_id_of_access(mock_get_auth_by_email):
+    
+    email = "FakeEmail"
+    mock_access = 1
+    mock_get_auth_by_email.return_value = mock_access
+    
+    response = client.get(f"/points/v1/access/{email}")
+    assert response.status_code == 200
+    assert response.json() == mock_access
+    
+    mock_get_auth_by_email.return_value = None
+
+    response = client.get(f"/points/v1/access/{email}")
+    assert response.status_code == 204
 
 @patch("api.main.crud.get_point_by_name")
 @patch("api.main.crud.delete_point")
