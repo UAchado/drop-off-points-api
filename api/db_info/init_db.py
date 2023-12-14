@@ -3,7 +3,13 @@ from sqlalchemy.orm import Session
 from db_info import models
 
 def init(db: Session):
-    
+    """
+    Initializes the database with initial items.
+
+    :param db: The database session object.
+    :type db: Session
+    :return: None
+    """
     initial_items_on_db = [
         models.Point(name = "Reitoria", location = "Departamento 25", coordinates = "40.631417730224, -8.657526476133642", 
                      image = "https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fuaonline.ua.pt%2Fupload%2Fimg%2Fjoua_i_3090.jpg&width=1200"),
