@@ -37,7 +37,6 @@ async def startup_event():
     db = database.SessionLocal()
     try:
         if crud.get_points(db) == []:
-            print("ENTRANDOOOO")
             init_db.init(db)
     finally:
         db.close()
