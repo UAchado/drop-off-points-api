@@ -24,6 +24,11 @@ app.add_middleware(
 )
 
 def get_db():
+    """
+    Obtain a database session for use within a context block.
+
+    :return: A database session.
+    """
     db = database.SessionLocal()
     try:
         yield db
@@ -34,6 +39,14 @@ def get_db():
 
 @app.on_event("startup")
 async def startup_event():
+    """
+    Handles the startup event of the application.
+
+    The startup event is triggered when the application starts. This method performs a check to see if there are any points in the database. If there are no points, it initializes the database
+    * with some initial data.
+
+    :return: None
+    """
     db = database.SessionLocal()
     try:
         if crud.get_points(db) == []:
@@ -45,11 +58,21 @@ async def startup_event():
 
 @app.get("/points/v1")
 def base():
+    """
+    Returns a dictionary with the response message.
+
+    :return: A dictionary with the response message.
+    :rtype: dict
+    """
     return {"response": "Hello World!"}
 
 @app.get("/points/v1/points", response_description = "Get the list of existing points.",
          response_model = list[schemas.Point], tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_all_points(db: Session = Depends(get_db)):
+    """
+    :param db: The database session to use for retrieving points.
+    :return: A list of existing points.
+    """
     points = crud.get_points(db)
     return points
 
@@ -57,6 +80,20 @@ def get_all_points(db: Session = Depends(get_db)):
          response_model = schemas.Point, tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_point(point_name: str,
               db: Session = Depends(get_db)):
+    """
+    .. py:function:: get_point(point_name: str, db: Session)
+
+       Get a specific point by its name.
+
+       :param point_name: The name of the point.
+       :type point_name: str
+       :param db: The database session.
+       :type db: Session
+       :return: The details of the point.
+       :rtype: schemas.Point
+       :raise HTTPException: If the point is not found.
+
+    """
     point = crud.get_point_by_name(db = db, name = point_name)
     if not point:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
@@ -67,6 +104,12 @@ def get_point(point_name: str,
 def create_point(request: Request,
                  point: schemas.PointCreate,
                  db: Session = Depends(get_db)):
+    """
+    :param request: The HTTP request object.
+    :param point: The payload data to create a new point.
+    :param db: The database session object.
+    :return: The created point object.
+    """
     auth.verify_access(request)
     if crud.get_point_by_name(db, name = point.name):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "POINT ALREADY REGISTERED")
@@ -77,6 +120,25 @@ def create_point(request: Request,
          response_model = Optional[int], tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_point_id_of_access(request: Request,
                            db: Session = Depends(get_db)):
+    """
+    **get_point_id_of_access**
+
+    Get the access point ID for a specific point by its name.
+
+    :param request: The request object containing the access information.
+    :param db: The database session.
+
+    :return: The access point ID as an optional integer.
+
+    :raises HTTPException: Raises an exception if the access point is not found.
+
+    Example usage:
+
+    ```python
+    access_point_id = get_point_id_of_access(request=request, db=db)
+    ```
+
+    """
     auth.verify_access(request)
     access_point_id = crud.get_auth(db = db, request = request)
     if not access_point_id:
@@ -88,6 +150,15 @@ def get_point_id_of_access(request: Request,
 def delete_point(request: Request,
                  point_name: str,
                  db: Session = Depends(get_db)):
+    """
+    Deletes a specific point by its name.
+
+    :param request: The request object.
+    :param point_name: The name of the point to delete.
+    :param db: The database session object.
+    :return: A message indicating whether the point was successfully deleted or not.
+    :rtype: dict
+    """
     auth.verify_access(request)
     if crud.delete_point(db, point_name) == None:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "POINT NOT FOUND")
