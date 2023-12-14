@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from . import database
@@ -16,5 +16,7 @@ class AuthorizationToPoint(database.Base):
     __tablename__ = "authpoint"
     
     id = Column(Integer, primary_key = True, index = True, autoincrement=True)
-    email = Column(String(30), unique = True)
-    point_id = Column(Integer)
+    sub = Column(String(50), unique = True)
+    point_id = Column(Integer, ForeignKey('points.id'))
+    
+    dropoff_point = relationship("Point")

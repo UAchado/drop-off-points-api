@@ -9,10 +9,8 @@ def test_base():
     assert response.status_code == 200
     assert response.json() == {"response": "Hello World!"}
 
-@patch("api.main.auth.verify_access")
 @patch("api.main.crud.get_points")
-def test_get_all_points(mock_get_points, mock_verify_access):
-    mock_verify_access.return_value = {"user": "dummy_user"}
+def test_get_all_points(mock_get_points):
     mock_points = [
         {"id": 1, "name": "point1", "location": "location1", "coordinates": "coordinates1", "image": "image1"},
         {"id": 2, "name": "point2", "location": "location2", "coordinates": "coordinates2", "image": "image2"}
@@ -23,10 +21,8 @@ def test_get_all_points(mock_get_points, mock_verify_access):
     assert response.status_code == 200
     assert response.json() == mock_points
 
-@patch("api.main.auth.verify_access")
 @patch("api.main.crud.get_point_by_name")
-def test_get_point_by_name(mock_get_point_by_name, mock_verify_access):
-    mock_verify_access.return_value = {"user": "dummy_user"}
+def test_get_point_by_name(mock_get_point_by_name):
     mock_point = {"id": 1, "name": "point1", "location": "location1", "coordinates": "coordinates1", "image": "image1"}
     mock_get_point_by_name.return_value = mock_point
     
@@ -57,21 +53,20 @@ def test_create_point(mock_create_point, mock_get_point_by_name, mock_verify_acc
     assert response.json() == {"detail": "POINT ALREADY REGISTERED"}
 
 @patch("api.main.auth.verify_access")
-@patch("api.main.crud.get_auth_by_email")
-def test_get_point_id_of_access(mock_get_auth_by_email, mock_verify_access):
+@patch("api.main.crud.get_auth")
+def test_get_point_id_of_access(mock_get_auth, mock_verify_access):
     mock_verify_access.return_value = {"user": "dummy_user"}
     
-    email = "FakeEmail"
     mock_access = 1
-    mock_get_auth_by_email.return_value = mock_access
+    mock_get_auth.return_value = mock_access
     
-    response = client.get(f"/points/v1/access/{email}")
+    response = client.get(f"/points/v1/access")
     assert response.status_code == 200
     assert response.json() == mock_access
     
-    mock_get_auth_by_email.return_value = None
+    mock_get_auth.return_value = None
 
-    response = client.get(f"/points/v1/access/{email}")
+    response = client.get(f"/points/v1/access")
     assert response.status_code == 204
 
 @patch("api.main.auth.verify_access")

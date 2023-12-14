@@ -27,7 +27,7 @@ class Point(PointBase):
 
 class AuthorizationToPoint(BaseModel):
     id: int
-    email: str
+    sub: str
     point_id: int
 
     class ConfigDict:
@@ -35,7 +35,7 @@ class AuthorizationToPoint(BaseModel):
         schema_extra = {
             "example": {
                 "id" : 1,
-                "email": "fake@fakemail.fake",
+                "sub": "sub_identifier",
                 "point_id": 1,
             }
         }
