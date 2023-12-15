@@ -24,7 +24,7 @@ def init(db: Session):
         models.Point(name = "Pavilhão Aristides Hall", location = "Departamento E", coordinates = "40.63000326980208, -8.654180591479575", 
                      image = "https://d1bvpoagx8hqbg.cloudfront.net/originals/bem-vindos-a-ua-399bd8560914b519d0dca3fc57bd0afe.jpg"),
         
-        models.AuthorizationToPoint(sub = "32e707bf-37cf-4c12-b783-4c356e241f1f", point_id = 3)    
+        models.AuthorizationToPoint(sub = "32e707bf-37cf-4c12-b783-4c356e241f1f", name = "Fidalgo", point_id = 3)    
     ]
     
     for entry in initial_items_on_db:

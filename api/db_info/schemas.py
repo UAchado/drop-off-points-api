@@ -70,6 +70,7 @@ class AuthorizationToPoint(BaseModel):
     Attributes:
         - id (int): The unique identifier of the authorization.
         - sub (str): The subject identifier of the authorization.
+        - name (str): The subject name
         - point_id (int): The identifier of the point that the authorization grants access to.
 
     ConfigDict:
@@ -82,11 +83,13 @@ class AuthorizationToPoint(BaseModel):
         {
             "id": 1,
             "sub": "sub_identifier",
+            "name": "user_name"
             "point_id": 1
         }
     """
     id: int
     sub: str
+    name: str
     point_id: int
 
     class ConfigDict:

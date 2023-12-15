@@ -66,14 +66,17 @@ def test_create_point(mock_create_point, mock_get_point_by_name, mock_verify_acc
 def test_get_point_id_of_access(mock_get_auth, mock_verify_access):
     mock_verify_access.return_value = {"user": "dummy_user"}
     
-    mock_access = 1
+    mock_access = ("fake_name", 1)
     mock_get_auth.return_value = mock_access
     
     response = client.get(urls["get_point_id_of_access"])
     assert response.status_code == 200
-    assert response.json() == mock_access
+    assert response.json() == {
+        "name": mock_access[0],
+        "point_id": mock_access[1]
+    }
     
-    mock_get_auth.return_value = None
+    mock_get_auth.return_value = (None, None)
 
     response = client.get(urls["get_point_id_of_access"])
     assert response.status_code == 204

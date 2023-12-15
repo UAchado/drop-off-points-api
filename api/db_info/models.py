@@ -35,6 +35,7 @@ class AuthorizationToPoint(database.Base):
     Attributes:
         id (int): The primary key for the authorization record.
         sub (str): The subject (user) being authorized.
+        name (str): The subject name
         point_id (int): The foreign key to the associated point.
         dropoff_point (:class:`Point`): The reference to the associated point.
 
@@ -43,6 +44,7 @@ class AuthorizationToPoint(database.Base):
     
     id = Column(Integer, primary_key = True, index = True, autoincrement=True)
     sub = Column(String(50), unique = True)
+    name = Column(String(50))
     point_id = Column(Integer, ForeignKey('points.id'))
     
     dropoff_point = relationship("Point")

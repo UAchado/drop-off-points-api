@@ -42,7 +42,7 @@ def get_auth(db: Session, request: Request):
     sub = decoded_token["sub"]
     access = db.query(models.AuthorizationToPoint).filter(models.AuthorizationToPoint.sub == sub).first()
     if access != None:
-        return access.point_id
+        return (access.name, access.point_id)
     return None
 
 def create_point(db: Session, new_point: schemas.PointCreate):

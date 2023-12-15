@@ -117,7 +117,7 @@ def create_point(request: Request,
 
 
 @app.get("/points/v1/access", response_description = "Get a specific point by its name.",
-         response_model = Optional[int], tags = ["Points"], status_code = status.HTTP_200_OK)
+         response_model = Optional[dict], tags = ["Points"], status_code = status.HTTP_200_OK)
 def get_point_id_of_access(request: Request,
                            db: Session = Depends(get_db)):
     """
@@ -140,10 +140,13 @@ def get_point_id_of_access(request: Request,
 
     """
     auth.verify_access(request)
-    access_point_id = crud.get_auth(db = db, request = request)
-    if not access_point_id:
+    (access_name, access_point_id) = crud.get_auth(db = db, request = request)
+    if access_name == None or access_point_id == None:
         raise HTTPException(status_code = status.HTTP_204_NO_CONTENT, detail = "ACCESS NOT FOUND")
-    return access_point_id
+    return {
+        "name": access_name,
+        "point_id": access_point_id
+        }
 
 @app.delete("/points/v1/points/name/{point_name}", response_description = "Delete a specific point by its name.",
             tags = ["Points"], status_code = status.HTTP_200_OK)

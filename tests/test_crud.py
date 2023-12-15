@@ -92,6 +92,7 @@ def test_get_auth(mock_verify_access, db):
     point = crud.get_points(db)[0]
     new_entry = models.AuthorizationToPoint(
                                 sub = "fake_sub_identifier",
+                                name = "fake_name",
                                 point_id = point.id,
                                 )
     db.add(new_entry)
@@ -100,7 +101,7 @@ def test_get_auth(mock_verify_access, db):
     mock_verify_access.return_value = {"sub":"fake_sub_identifier"}
     
     point_id = crud.get_auth(db = db, request = None)
-    assert point_id == point.id
+    assert point_id == ("fake_name", point.id)
 
 def test_create_point(db):
     
