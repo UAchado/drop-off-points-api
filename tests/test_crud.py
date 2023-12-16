@@ -84,9 +84,8 @@ def test_get_point_by_name(db):
 def test_get_auth(mock_verify_access, db):
     mock_verify_access.return_value = {"sub":"None"}
     
-    point_id = crud.get_auth(db = db, request = None)
-    assert point_id == None
-    
+    access = crud.get_auth(db = db, request = None)
+    assert access == (None, None)
 
     add_points_to_db(db, [points_bucket[0]])
     point = crud.get_points(db)[0]
@@ -100,8 +99,8 @@ def test_get_auth(mock_verify_access, db):
     
     mock_verify_access.return_value = {"sub":"fake_sub_identifier"}
     
-    point_id = crud.get_auth(db = db, request = None)
-    assert point_id == ("fake_name", point.id)
+    access = crud.get_auth(db = db, request = None)
+    assert access == ("fake_name", point.id)
 
 def test_create_point(db):
     
